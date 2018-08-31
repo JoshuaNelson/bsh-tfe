@@ -3,6 +3,7 @@ package main
 import (
 	"bsh-tfe/control"
 	"bsh-tfe/view"
+	"bsh-tfe/mgrs"
 	"bsh-tfe/world"
 	"github.com/nsf/termbox-go"
 	"logger"
@@ -61,7 +62,7 @@ func main() {
 	logger.Debug("Initializing display.")
 	var textIn strings.Builder
 	var msg string
-	termbox.SetInputMode(termbox.InputEsc | termbox.InputMouse)
+	termbox.SetInputMode(termbox.InputEsc) // | termbox.InputMouse)
 	termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
 	draw.Frontend(textIn.String(), msg)
 	termbox.Flush()
@@ -73,7 +74,7 @@ loop:
 		case termbox.EventKey:
 			command, s := inputEventHandler(event, &textIn)
 			cmdExit, _ := cmd.Find(wordExit)
-			if command== nil {
+			if command == nil {
 				break
 			} else if command == cmdExit {
 				logger.Debug("Exiting frontend.")
@@ -89,6 +90,7 @@ loop:
 
 		termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
 		draw.Frontend(textIn.String(), msg)
+		draw.Text(1,20,gzd.ToString())
 		termbox.Flush()
 
 		msg = ""

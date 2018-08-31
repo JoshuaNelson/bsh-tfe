@@ -1,11 +1,13 @@
 package cmd
 
 import (
+	"bsh-tfe/world"
 	"logger"
+	"strconv"
 	"strings"
 )
 
-var root *Command = &Command{"", nil, nil}
+var root *Command = &Command{"", nil, usageRoot}
 var exit *Command = root.addSubCmd("exit")
 
 func (c *Command) addSubCmd(t string) *Command {
@@ -50,24 +52,28 @@ func Find(t string) (*Command, string) {
 
 func Init() {
 	logger.Debug("Initializing commands.")
-	// TODO remove these
-	cmdTest := root.addSubCmd("test")
-	cmdThis := cmdTest.addSubCmd("this")
-	cmdThis.addSubCmd("command")
-
 	// TODO add help func
 	root.addSubCmd("help")
+
 	cmdList := root.addSubCmd("list")
 	cmdList.function = listCommands
 
 	// TODO flesh out commands for game
-	cmdWorld := root.addSubCmd("world")
-	cmdWorld.addSubCmd("goto")
-	cmdWorld.addSubCmd("bookmark")
+	cmdMap := root.addSubCmd("map")
+	cmdMapSelect := cmdMap.addSubCmd("select")
+	cmdMapSelect.function = mapSelect
+	cmdMapInfo := cmdMap.addSubCmd("info")
+	cmdMapInfo.function = mapInfo
+	cmdMap.addSubCmd("goto")
+	cmdMap.addSubCmd("bookmark")
+	cmdMapSet := cmdMap.addSubCmd("set")
+	cmdMapSetBiome := cmdMapSet.addSubCmd("biome")
+	cmdMapSetBiome.function = mapSetBiome
 
 	cmdUnit := root.addSubCmd("unit")
 	cmdUnit.addSubCmd("select")
 	cmdUnit.addSubCmd("deselect")
+	cmdUnit.addSubCmd("list")
 	cmdUnit.addSubCmd("alias")
 	cmdUnit.addSubCmd("move")
 	cmdUnit.addSubCmd("stop")
@@ -78,6 +84,7 @@ func Init() {
 	cmdGroup := root.addSubCmd("group")
 	cmdGroup.addSubCmd("select")
 	cmdGroup.addSubCmd("deselect")
+	cmdGroup.addSubCmd("list")
 	cmdGroup.addSubCmd("set")
 	cmdGroup.addSubCmd("unset")
 	cmdGroup.addSubCmd("alias")
@@ -94,10 +101,61 @@ func Run(cmd *Command, s string) string {
 	return msg
 }
 
+func usageRoot(s string) string {
+	msg := strings.Split(s, " ")
+	return "Command '" + msg[0] + "' not recognized."
+}
+
 func listCommands(s string) string {
 	var msg []string
 	for _, cmd := range root.children {
 		msg = append(msg, cmd.text)
 	}
 	return "Commands: " + strings.Join(msg, ", ")
+}
+
+func mapSelect(s string) string {
+	msg := strings.Split(s, " ")
+	x, err := strconv.Atoi(msg[0])
+	if err != nil {
+		panic(err)
+	}
+	y, err := strconv.Atoi(msg[1])
+	if err != nil {
+		panic(err)
+	}
+
+	world.Selected = world.GameMap.Grid(x,y)
+	return "Selected map at " + msg[0] + "x" + msg[1]
+}
+
+func mapSetBiome(s string) string {
+	msg := strings.Split(s, " ")
+	t, err := strconv.Atoi(msg[0])
+	if err != nil {
+		return "Usage: map set biome <biome>"
+	}
+
+	if world.Selected != nil {
+		world.Selected.SetBiome(t)
+		return "Set biome successfully."
+	} else {
+		return "No grid selected. Use: map select <grid>"
+	}
+}
+
+func mapInfo(s string) string {
+	msg := strings.Split(s, " ")
+	x, err := strconv.Atoi(msg[0])
+	if err != nil {
+		panic(err)
+	}
+	y, err := strconv.Atoi(msg[1])
+	if err != nil {
+		panic(err)
+	}
+
+	b := world.GameMap.Grid(x,y).Biome
+
+	return "Selected map at " + msg[0] + "x" + msg[1] + ": Biome " + strconv.Itoa(b)
 }

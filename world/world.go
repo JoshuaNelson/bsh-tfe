@@ -1,6 +1,7 @@
 package world
 
 import (
+	"bsh-tfe/mgrs"
 	"logger"
 )
 
@@ -10,6 +11,10 @@ var Selected *Terrain
 
 var TERRAIN_ARID int = 0
 var TERRAIN_FOREST int = 1
+
+type Grid struct {
+	Biome int
+}
 
 type Terrain struct {
 	x int
@@ -28,6 +33,17 @@ func (m *Map) Grid(x, y int) *Terrain {
 
 func (t *Terrain) SetBiome(b int) {
 	t.Biome = b
+}
+
+func InitPlanet() {
+	g, err := mgrs.StringToGridDesignation("1C AB 100 200")
+	if err != nil {
+		panic(err)
+	}
+	logger.Debug("Initializing Game Map.")
+	logger.Debug("Starting with coordinate '%s'", g.ToString())
+	var p Planet
+	p.GetGrid(g)
 }
 
 func Init() {

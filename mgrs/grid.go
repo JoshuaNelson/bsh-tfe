@@ -6,73 +6,72 @@ import (
 	"strings"
 )
 
-type Grid struct {
-	GZD gridZoneDesignation
-	SID squareIdentifier
-	coord sixDigitCoordinate
-	selected bool
+type GridDesignation struct {
+	GZD GridZoneDesignation
+	GSD GridSquareDesignation
+	SDC SixDigitCoordinate
 }
 
-func StringToGrid(s string) (Grid, error) {
+func StringToGridDesignation(s string) (GridDesignation, error) {
 	e := fmt.Errorf("Invalid MGRS.")
 	gridWord := strings.Split(s, " ")
 
-	// Build the gridZoneDesignation
-	var gzd gridZoneDesignation
+	// Build the GridZoneDesignation
+	var gzd GridZoneDesignation
 	if len(gridWord) >= 4 {
 		var err error = nil
 		gzd, err = stringToGZD(gridWord[0])
 		if err != nil {
 			logger.Debug("Invalid GZD")
-			return Grid{}, err
+			return GridDesignation{}, err
 		}
 		gridWord = gridWord[1:]
-	} else if currentGZD != (gridZoneDesignation{}) {
+	} else if currentGZD != (GridZoneDesignation{}) {
 		gzd = currentGZD
 	} else {
-		return Grid{}, e
+		return GridDesignation{}, e
 	}
 
-	// Build the squareIdentifier
-	var sid squareIdentifier
+	// Build the GridSquareDesignation
+	var gsd GridSquareDesignation
 	if len(gridWord) >= 3 {
 		var err error = nil
-		sid, err = stringToSID(gridWord[0])
+		gsd, err = stringToSID(gridWord[0])
 		if err != nil {
 			logger.Debug("Invalid square identifier")
-			return Grid{}, err
+			return GridDesignation{}, err
 		}
 		gridWord = gridWord[1:]
-	} else if currentSID != (squareIdentifier{}) {
-		sid = currentSID
+	} else if currentGSD != (GridSquareDesignation{}) {
+		gsd = currentGSD
 	} else {
-		return Grid{}, e
+		return GridDesignation{}, e
 	}
 
-	if !sid.validEasting(gzd) {
+	if !gsd.validEasting(gzd) {
 		logger.Debug("Invalid easting square identifier coordinate.")
-		return Grid{}, e
-	} else if !sid.validNorthing(gzd) {
+		return GridDesignation{}, e
+	} else if !gsd.validNorthing(gzd) {
 		logger.Debug("Invalid northing square identifier coordinate.")
-		return Grid{}, e
+		return GridDesignation{}, e
 	}
 
-	// Build the sixDigitCoordinate
-	var sdc sixDigitCoordinate
+	// Build the SixDigitCoordinate
+	var sdc SixDigitCoordinate
 	sdc, err := stringToSDC(gridWord[0], gridWord[1])
 	if err != nil {
-		return Grid{}, err
+		return GridDesignation{}, err
 	}
 
-	return Grid{gzd, sid, sdc, false}, nil
+	return GridDesignation{gzd, gsd, sdc}, nil
 }
 
-func (g Grid) ToString() (string) {
+func (g GridDesignation) ToString() (string) {
 	var gridBldr strings.Builder
-	gridBldr.WriteString(g.GZD.toString())
+	gridBldr.WriteString(g.GZD.ToString())
 	gridBldr.WriteString(" ")
-	gridBldr.WriteString(g.SID.toString())
+	gridBldr.WriteString(g.GSD.ToString())
 	gridBldr.WriteString(" ")
-	gridBldr.WriteString(g.coord.toString())
+	gridBldr.WriteString(g.SDC.ToString())
 	return gridBldr.String()
 }

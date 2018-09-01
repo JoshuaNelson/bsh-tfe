@@ -6,28 +6,28 @@ import (
 	"strings"
 )
 
-type sixDigitCoordinate struct {
-	easting int
-	northing int
+type SixDigitCoordinate struct {
+	Easting int
+	Northing int
 }
 
-func stringToSDC(s_easting string, s_northing string) (sixDigitCoordinate, error) {
+func stringToSDC(eastingStr string, northingStr string) (SixDigitCoordinate, error) {
 	e := fmt.Errorf("Invalid 6 digit coordinate.")
-	easting, err := strconv.Atoi(s_easting)
+	easting, err := strconv.Atoi(eastingStr)
 	if err != nil {
-		return sixDigitCoordinate{}, e
+		return SixDigitCoordinate{}, e
 	}
-	northing, err := strconv.Atoi(s_northing)
+	northing, err := strconv.Atoi(northingStr)
 	if err != nil {
-		return sixDigitCoordinate{}, e
+		return SixDigitCoordinate{}, e
 	}
-	return sixDigitCoordinate{easting, northing}, nil
+	return SixDigitCoordinate{easting, northing}, nil
 }
 
-func (sdc sixDigitCoordinate) toString() (string) {
+func (sdc SixDigitCoordinate) ToString() (string) {
 	var sdcBldr strings.Builder
-	sdcBldr.WriteString(fmt.Sprintf("%03d", sdc.easting))
+	sdcBldr.WriteString(fmt.Sprintf("%03d", sdc.Easting))
 	sdcBldr.WriteString(" ")
-	sdcBldr.WriteString(fmt.Sprintf("%03d", sdc.northing))
+	sdcBldr.WriteString(fmt.Sprintf("%03d", sdc.Northing))
 	return sdcBldr.String()
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"bsh-tfe/control"
 	"bsh-tfe/view"
-	"bsh-tfe/mgrs"
 	"bsh-tfe/world"
 	"github.com/nsf/termbox-go"
 	"logger"
@@ -58,6 +57,7 @@ func main() {
 
 	cmd.Init()
 	world.Init()
+	world.InitPlanet()
 
 	logger.Debug("Initializing display.")
 	var textIn strings.Builder
@@ -90,7 +90,6 @@ loop:
 
 		termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
 		draw.Frontend(textIn.String(), msg)
-		draw.Text(1,20,gzd.ToString())
 		termbox.Flush()
 
 		msg = ""

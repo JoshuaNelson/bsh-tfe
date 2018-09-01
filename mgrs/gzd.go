@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var currentGZD gridZoneDesignation
+var currentGZD GridZoneDesignation
 
 var gzdEastingSequence = []int{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,
     20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,
@@ -15,26 +15,26 @@ var gzdEastingSequence = []int{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,
 var gzdNorthingSequence = []rune{'C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','U','V','W','X'}
 var gzdRatio = [2]int{6,8}
 
-type gridZoneDesignation struct {
-	easting int
-	northing rune
+type GridZoneDesignation struct {
+	Easting int
+	Northing rune
 }
 
-func stringToGZD(gridWord string) (gridZoneDesignation, error) {
+func stringToGZD(gridWord string) (GridZoneDesignation, error) {
 	var easting int
 	var northing rune
 	e := fmt.Errorf("Invalid Grid Zone Designation.")
 
 	// Should either be 3 or 2 characters
 	if len(gridWord) > 4 || len(gridWord) < 2 {
-		return gridZoneDesignation{}, e
+		return GridZoneDesignation{}, e
 	}
 
 	// Get the easting value, should be 1 or 2 digit integer
 	easting, err := strconv.Atoi(gridWord[:len(gridWord)-1])
 	if err != nil {
 		logger.Debug("Invalid GZD easting size")
-		return gridZoneDesignation{}, e
+		return GridZoneDesignation{}, e
 	}
 
 	gridWord = gridWord[1:]
@@ -43,7 +43,7 @@ func stringToGZD(gridWord string) (gridZoneDesignation, error) {
 	if easting < gzdEastingSequence[0] ||
 	    easting > gzdEastingSequence[len(gzdEastingSequence)-1] {
 		logger.Debug("Invalid GZD easting value")
-		return gridZoneDesignation{}, e
+		return GridZoneDesignation{}, e
 	}
 
 	// Get the northing value, should be a single rune
@@ -58,15 +58,15 @@ func stringToGZD(gridWord string) (gridZoneDesignation, error) {
 
 	if !northingValid {
 		logger.Debug("Invalid GZD northing value")
-		return gridZoneDesignation{}, e
+		return GridZoneDesignation{}, e
 	}
 	// We have valid easting and northing values, success
-	return gridZoneDesignation{easting, northing}, nil
+	return GridZoneDesignation{easting, northing}, nil
 }
 
-func (gzd gridZoneDesignation) toString() (string) {
+func (gzd GridZoneDesignation) ToString() (string) {
 	var gzdBldr strings.Builder
-	gzdBldr.WriteString(strconv.Itoa(gzd.easting))
-	gzdBldr.WriteRune(gzd.northing)
+	gzdBldr.WriteString(strconv.Itoa(gzd.Easting))
+	gzdBldr.WriteRune(gzd.Northing)
 	return gzdBldr.String()
 }

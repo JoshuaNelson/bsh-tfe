@@ -20,7 +20,7 @@ func initGridSquare(gsd mgrs.GridSquareDesignation) GridSquare {
 		for y := 0; y < gridSquareSize; y++ {
 			sdc := mgrs.SixDigitCoordinate{x, y}
 			//TODO generate random biomes
-			gs.Grid[sdc] = Grid{TERRAIN_ARID}
+			gs.Grid[sdc] = Grid{TERRAIN_FOREST}
 		}
 	}
 

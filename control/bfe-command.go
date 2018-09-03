@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bsh-tfe/mgrs"
 	"bsh-tfe/world"
 	"logger"
 	"strconv"
@@ -115,18 +116,13 @@ func listCommands(s string) string {
 }
 
 func mapSelect(s string) string {
-	msg := strings.Split(s, " ")
-	x, err := strconv.Atoi(msg[0])
+	grid, err := mgrs.StringToGridDesignation(s)
 	if err != nil {
-		panic(err)
-	}
-	y, err := strconv.Atoi(msg[1])
-	if err != nil {
-		panic(err)
+		return "Invalid grid designation."
 	}
 
-	world.Selected = world.GameMap.Grid(x,y)
-	return "Selected map at " + msg[0] + "x" + msg[1]
+	world.SelectedGrid = grid
+	return "Selected grid " + grid.ToString() + "."
 }
 
 func mapSetBiome(s string) string {
@@ -136,8 +132,9 @@ func mapSetBiome(s string) string {
 		return "Usage: map set biome <biome>"
 	}
 
-	if world.Selected != nil {
-		world.Selected.SetBiome(t)
+	if world.SelectedGrid != (mgrs.GridDesignation{}) {
+		grid := world.Terra.GetGrid(world.SelectedGrid)
+		grid.Biome = t
 		return "Set biome successfully."
 	} else {
 		return "No grid selected. Use: map select <grid>"
@@ -145,17 +142,6 @@ func mapSetBiome(s string) string {
 }
 
 func mapInfo(s string) string {
-	msg := strings.Split(s, " ")
-	x, err := strconv.Atoi(msg[0])
-	if err != nil {
-		panic(err)
-	}
-	y, err := strconv.Atoi(msg[1])
-	if err != nil {
-		panic(err)
-	}
-
-	b := world.GameMap.Grid(x,y).Biome
-
-	return "Selected map at " + msg[0] + "x" + msg[1] + ": Biome " + strconv.Itoa(b)
+	b := world.Terra.GetGrid(world.SelectedGrid).Biome
+	return "Grid " + world.SelectedGrid.ToString() + ": Biome " + strconv.Itoa(b)
 }

@@ -57,7 +57,6 @@ func main() {
 
 	cmd.Init()
 	world.Init()
-	world.InitPlanet()
 
 	logger.Debug("Initializing display.")
 	var textIn strings.Builder

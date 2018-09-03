@@ -2,6 +2,7 @@ package draw
 
 import (
 	"github.com/nsf/termbox-go"
+	"bsh-tfe/mgrs"
 	"bsh-tfe/world"
 )
 
@@ -47,7 +48,7 @@ func Frontend(consoleBuf, msgBuf string) {
 	x, y := 1, 1
 	boxWidth, boxHeight:= frontendSquareSize, frontendSquareSize
 	Console(x, y, consoleBuf)
-	World(x, y+1, boxWidth, boxHeight, 0, 0)
+	World(x, y+1, boxWidth, boxHeight, world.SelectedGrid)
 	Text(x+1, y+3+boxHeight, msgBuf)
 }
 
@@ -57,31 +58,28 @@ func Text(x, y int, text string) {
 	}
 }
 
-func World(x, y, width, height, xCoord, yCoord int) {
+func World(x, y, width, height int, g mgrs.GridDesignation) {
 	Box(x, y, width, height)
 	for i := 0; i < width; i++ {
 		for j := 0; j < height; j++ {
-			Terrain(x+1+i*2, y+j+1, i+xCoord, j+yCoord)
+			// TODO we have to iterate somehow
+			//Terrain(x+1+i*2, y+j+1, g)
 		}
 	}
 }
 
-func Terrain(x, y, xWrldCoord, yWrldCoord int) {
-	if xWrldCoord > world.Size || yWrldCoord > world.Size {
-		return
-	}
-
+func Terrain(x, y int, g mgrs.GridDesignation) {
 	var ch rune = 0x0000
-	t := world.GameMap.Grid(xWrldCoord, yWrldCoord)
+	grid := world.Terra.GetGrid(g)
 
-	switch t.Biome {
+	switch grid.Biome {
 	case world.TERRAIN_ARID:
 		ch = '_'
 	case world.TERRAIN_FOREST:
 		ch = 'f'
 	}
 
-	if t == world.Selected {
+	if g == world.SelectedGrid {
 		CellSelected(x, y, ch)
 		CellSelected(x+1, y, 0x0000)
 	} else {

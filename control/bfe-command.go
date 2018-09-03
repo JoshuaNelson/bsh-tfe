@@ -60,16 +60,16 @@ func Init() {
 	cmdList.function = listCommands
 
 	// TODO flesh out commands for game
-	cmdMap := root.addSubCmd("map")
-	cmdMapSelect := cmdMap.addSubCmd("select")
-	cmdMapSelect.function = mapSelect
-	cmdMapInfo := cmdMap.addSubCmd("info")
-	cmdMapInfo.function = mapInfo
-	cmdMap.addSubCmd("goto")
-	cmdMap.addSubCmd("bookmark")
-	cmdMapSet := cmdMap.addSubCmd("set")
-	cmdMapSetBiome := cmdMapSet.addSubCmd("biome")
-	cmdMapSetBiome.function = mapSetBiome
+	cmdGrid := root.addSubCmd("grid")
+	cmdGridSelect := cmdGrid.addSubCmd("select")
+	cmdGridSelect.function = gridSelect
+	cmdGridInfo := cmdGrid.addSubCmd("info")
+	cmdGridInfo.function = gridInfo
+	cmdGrid.addSubCmd("goto")
+	cmdGrid.addSubCmd("bookmark")
+	cmdGridSet := cmdGrid.addSubCmd("set")
+	cmdGridSetBiome := cmdGridSet.addSubCmd("biome")
+	cmdGridSetBiome.function = gridSetBiome
 
 	cmdUnit := root.addSubCmd("unit")
 	cmdUnit.addSubCmd("select")
@@ -115,7 +115,7 @@ func listCommands(s string) string {
 	return "Commands: " + strings.Join(msg, ", ")
 }
 
-func mapSelect(s string) string {
+func gridSelect(s string) string {
 	grid, err := mgrs.StringToGridDesignation(s)
 	if err != nil {
 		return "Invalid grid designation."
@@ -125,7 +125,7 @@ func mapSelect(s string) string {
 	return "Selected grid " + grid.ToString() + "."
 }
 
-func mapSetBiome(s string) string {
+func gridSetBiome(s string) string {
 	msg := strings.Split(s, " ")
 	t, err := strconv.Atoi(msg[0])
 	if err != nil {
@@ -141,7 +141,7 @@ func mapSetBiome(s string) string {
 	}
 }
 
-func mapInfo(s string) string {
+func gridInfo(s string) string {
 	b := world.Terra.GetGrid(world.SelectedGrid).Biome
 	return "Grid " + world.SelectedGrid.ToString() + ": Biome " + strconv.Itoa(b)
 }

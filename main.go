@@ -13,17 +13,17 @@ import (
 var wordExit string = "exit"
 
 func inputEventHandler(e termbox.Event, input *strings.Builder) (
-    *cmd.Command, string) {
+    *control.Command, string) {
 	switch e.Key {
 	// Exit program
 	case termbox.KeyCtrlX:
-		cmdExit, _ := cmd.Find(wordExit)
-		return cmdExit, ""
+		controlExit, _ := control.Find(wordExit)
+		return controlExit, ""
 
 	// Execute program
 	case termbox.KeyEnter:
 		defer input.Reset()
-		return cmd.Find(strings.TrimSpace(input.String()))
+		return control.Find(strings.TrimSpace(input.String()))
 
 	// Backspace
 	case termbox.KeyBackspace, termbox.KeyBackspace2:
@@ -55,7 +55,7 @@ func main() {
 	check(termbox.Init())
 	defer termbox.Close()
 
-	cmd.Init()
+	control.Init()
 	world.Init()
 
 	logger.Debug("Initializing display.")
@@ -73,14 +73,14 @@ loop:
 		switch event := termbox.PollEvent(); event.Type {
 		case termbox.EventKey:
 			command, s := inputEventHandler(event, &textIn)
-			cmdExit, _ := cmd.Find(wordExit)
+			controlExit, _ := control.Find(wordExit)
 			if command == nil {
 				break
-			} else if command == cmdExit {
+			} else if command == controlExit {
 				logger.Debug("Exiting frontend.")
 				break loop
 			} else {
-				msg = cmd.Run(command, s)
+				msg = control.Run(command, s)
 				logger.Debug("Running with msg %s", msg)
 			}
 

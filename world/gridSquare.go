@@ -11,7 +11,7 @@ type GridSquare struct {
 	Grid map[mgrs.SixDigitCoordinate]*Grid
 }
 
-func initGridSquare(gsd mgrs.GridSquareDesignation) GridSquare {
+func initGridSquare(gsd mgrs.GridSquareDesignation) *GridSquare {
 	var gs GridSquare
 	gs.Grid = make(map[mgrs.SixDigitCoordinate]*Grid)
 
@@ -20,13 +20,13 @@ func initGridSquare(gsd mgrs.GridSquareDesignation) GridSquare {
 		for y := 0; y < gridSquareSize; y++ {
 			sdc := mgrs.SixDigitCoordinate{x, y}
 			//TODO generate random biomes
-			gs.Grid[sdc] = &Grid{TERRAIN_FOREST}
+			gs.Grid[sdc] = &Grid{BIOME_ROCKY}
 		}
 	}
 
-	return gs
+	return &gs
 }
 
-func (gs GridSquare) getGrid(g mgrs.GridDesignation) *Grid {
+func (gs *GridSquare) getGrid(g mgrs.GridDesignation) *Grid {
 	return gs.Grid[g.SDC]
 }

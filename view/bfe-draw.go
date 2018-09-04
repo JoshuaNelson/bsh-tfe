@@ -7,7 +7,7 @@ import (
 )
 
 var ConsolePrompt string = ">"
-var frontendSquareSize = 10
+var frontendSquareSize = 20
 
 func Box(x, y, height, width int) {
 	// Draw corners
@@ -60,30 +60,58 @@ func Text(x, y int, text string) {
 
 func World(x, y, width, height int, g mgrs.GridDesignation) {
 	Box(x, y, width, height)
+	origNorthing := g.SDC.Northing
+	//origEasting :=  g.SDC.Easting
+
 	for i := 0; i < width; i++ {
 		for j := 0; j < height; j++ {
-			// TODO we have to iterate somehow
-			//Terrain(x+1+i*2, y+j+1, g)
+			Terrain(x+1+i*2, y+j+1, g)
+			g.SDC.Northing -= 1
 		}
+		g.SDC.Northing = origNorthing
+		g.SDC.Easting -= 1
 	}
 }
 
 func Terrain(x, y int, g mgrs.GridDesignation) {
-	var ch rune = 0x0000
+	var ch1 rune = 0x0000
+	var ch2 rune = 0x0000
 	grid := world.Terra.GetGrid(g)
 
+	if grid == nil {
+		return
+	}
+
+	fgColor := termbox.ColorDefault
+	bgColor := termbox.ColorDefault
+	fgSelColor := termbox.ColorBlack
+	bgSelColor := termbox.ColorWhite
+
 	switch grid.Biome {
-	case world.TERRAIN_ARID:
-		ch = '_'
-	case world.TERRAIN_FOREST:
-		ch = 'f'
+	case world.BIOME_ARID:
+		ch2 = UpArrow
+		fgColor = termbox.ColorBlack
+		bgColor = termbox.Attribute(222)
+	case world.BIOME_FOREST:
+		ch2 = Delta
+		fgColor = termbox.Attribute(23) // Dark Green Trees
+		bgColor = termbox.Attribute(35) // Green Tile
+	case world.BIOME_GRASSLAND:
+		ch2 = DownArrow
+		fgColor = termbox.Attribute(23) // Dark Green Trees
+		bgColor = termbox.Attribute(41) // Light Green
+	case world.BIOME_ROCKY:
+		ch2 = Gravel
+		fgColor = termbox.Attribute(250)
+		bgColor = termbox.Attribute(246)
 	}
 
 	if g == world.SelectedGrid {
-		CellSelected(x, y, ch)
-		CellSelected(x+1, y, 0x0000)
+		ch1 = Machine
+		termbox.SetCell(x,   y, ch1, fgSelColor, bgSelColor)
+		termbox.SetCell(x+1, y, ch2, fgSelColor, bgSelColor)
 	} else {
-		Cell(x, y, ch)
-		Cell(x+1, y, 0x0000)
+		termbox.SetCell(x,   y, ch1, fgColor, bgColor)
+		termbox.SetCell(x+1, y, ch2, fgColor, bgColor)
 	}
 }

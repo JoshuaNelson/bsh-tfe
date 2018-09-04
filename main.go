@@ -62,6 +62,7 @@ func main() {
 	var textIn strings.Builder
 	var msg string
 	termbox.SetInputMode(termbox.InputEsc) // | termbox.InputMouse)
+	termbox.SetOutputMode(termbox.Output256)
 	termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
 	draw.Frontend(textIn.String(), msg)
 	termbox.Flush()

@@ -6,52 +6,15 @@ import (
 	"bsh-tfe/world"
 	"github.com/nsf/termbox-go"
 	"logger"
-
-	"strings"
 )
-
-var wordExit string = "exit"
-
-func inputEventHandler(e termbox.Event, input *strings.Builder) (
-    *control.Command, string) {
-	switch e.Key {
-	// Exit program
-	case termbox.KeyCtrlX:
-		controlExit, _ := control.Find(wordExit)
-		return controlExit, ""
-
-	// Execute program
-	case termbox.KeyEnter:
-		defer input.Reset()
-		return control.Find(strings.TrimSpace(input.String()))
-
-	// Backspace
-	case termbox.KeyBackspace, termbox.KeyBackspace2:
-		tmpInput := input.String()
-		if len(tmpInput) > 0 {
-			input.Reset()
-			input.WriteString(tmpInput[0:len(tmpInput)-1])
-		}
-		return nil, ""
-
-	// Space sets rune as NULL (0x0000) we want space (0x0020)
-	case termbox.KeySpace:
-		input.WriteRune(0x0020) // Space
-		return nil, ""
-	}
-
-	// Other
-	input.WriteRune(e.Ch)
-	return nil, ""
-}
 
 func check(e error) { if e != nil { panic(e) } }
 
 func main() {
 	logger.Init()
 	defer logger.Close()
-
 	logger.Debug("Initializing frontend.")
+
 	check(termbox.Init())
 	defer termbox.Close()
 
@@ -59,12 +22,10 @@ func main() {
 	world.Init()
 
 	logger.Debug("Initializing display.")
-	var textIn strings.Builder
-	var msg string
 	termbox.SetInputMode(termbox.InputEsc) // | termbox.InputMouse)
 	termbox.SetOutputMode(termbox.Output256)
 	termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
-	draw.Frontend(textIn.String(), msg)
+	draw.Frontend()
 	termbox.Flush()
 
 	logger.Debug("Polling for events.")
@@ -72,26 +33,18 @@ loop:
 	for {
 		switch event := termbox.PollEvent(); event.Type {
 		case termbox.EventKey:
-			command, s := inputEventHandler(event, &textIn)
-			controlExit, _ := control.Find(wordExit)
-			if command == nil {
-				break
-			} else if command == controlExit {
-				logger.Debug("Exiting frontend.")
+			if event.Key == termbox.KeyCtrlX {
 				break loop
-			} else {
-				msg = control.Run(command, s)
-				logger.Debug("Running with msg %s", msg)
 			}
+			control.InputMode().EventHandler(event)
 
 		case termbox.EventError:
 			panic(event.Err)
 		}
 
 		termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
-		draw.Frontend(textIn.String(), msg)
-		termbox.Flush()
 
-		msg = ""
+		draw.Frontend()
+		termbox.Flush()
 	}
 }

@@ -2,6 +2,7 @@ package draw
 
 import (
 	"github.com/nsf/termbox-go"
+	"bsh-tfe/control"
 	"bsh-tfe/mgrs"
 	"bsh-tfe/world"
 )
@@ -44,12 +45,12 @@ func Console(x, y int, consoleBuf string) {
 	Text(x + len(ConsolePrompt) + 1, y, consoleBuf)
 }
 
-func Frontend(consoleBuf, msgBuf string) {
+func Frontend() {
 	x, y := 1, 1
 	boxWidth, boxHeight:= frontendSquareSize, frontendSquareSize
-	Console(x, y, consoleBuf)
+	Console(x, y, control.CommandLine.Buffer.String())
 	World(x, y+1, boxWidth, boxHeight, world.SelectedGrid)
-	Text(x+1, y+3+boxHeight, msgBuf)
+	//Text(x+1, y+3+boxHeight, msgBuf)
 }
 
 func Text(x, y int, text string) {

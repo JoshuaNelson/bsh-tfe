@@ -36,6 +36,12 @@ func (t Terminal) EventHandler(event termbox.Event) {
 	case termbox.KeySpace:
 		t.Buffer.WriteRune(0x0020) // Space
 		return
+
+	case termbox.KeyArrowUp, termbox.KeyArrowDown, termbox.KeyArrowRight,
+	    termbox.KeyArrowLeft:
+		inputMode = TerrainMap
+		inputMode.EventHandler(event)
+		return
 	}
 
 	t.Buffer.WriteRune(event.Ch)
@@ -61,7 +67,8 @@ func InitMainCommandLine() Terminal {
 	cmdGridSelect.function = gridSelect
 	cmdGridInfo := cmdGrid.addSubCmd("info")
 	cmdGridInfo.function = gridInfo
-	cmdGrid.addSubCmd("goto")
+	cmdGridGoto := cmdGrid.addSubCmd("goto")
+	cmdGridGoto.function = gridGoto
 	cmdGrid.addSubCmd("bookmark")
 	cmdGridSet := cmdGrid.addSubCmd("set")
 	cmdGridSetBiome := cmdGridSet.addSubCmd("biome")

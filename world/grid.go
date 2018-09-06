@@ -5,10 +5,13 @@ import (
 )
 
 var SelectedGrid mgrs.GridDesignation
-var testSelectGrid *Grid
 
 type Grid struct {
 	Biome int
+	North *Grid
+	//South *Grid
+	East  *Grid
+	//West  *Grid
 }
 
 func (g *Grid) setBiome(b int) {

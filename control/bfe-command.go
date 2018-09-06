@@ -29,9 +29,20 @@ func gridSelect(s string) string {
 		return "Invalid grid designation."
 	}
 
-	SelectedGrid = grid
+	SelectedGridDesig = grid
+	SelectedGrid = world.SelectedPlanet.GetGrid(grid)
 	return "Selected grid " + grid.ToString() + "."
 }
+
+func gridGoto(s string) string {
+	grid, err := mgrs.StringToGridDesignation(s)
+	if err != nil {
+		return "Invalid grid designation."
+	}
+
+	ViewGridDesig = grid
+	return "Viewing grid " + grid.ToString() + "."
+	}
 
 func gridSetBiome(s string) string {
 	msg := strings.Split(s, " ")
@@ -40,9 +51,8 @@ func gridSetBiome(s string) string {
 		return "Usage: map set biome <biome>"
 	}
 
-	if SelectedGrid != (mgrs.GridDesignation{}) {
-		grid := world.SelectedPlanet.GetGrid(SelectedGrid)
-		grid.Biome = t
+	if SelectedGrid != nil {
+		SelectedGrid.Biome = t
 		return "Set biome successfully."
 	} else {
 		return "No grid selected. Use: map select <grid>"
@@ -50,6 +60,6 @@ func gridSetBiome(s string) string {
 }
 
 func gridInfo(s string) string {
-	b := world.SelectedPlanet.GetGrid(SelectedGrid).Biome
-	return "Grid " + SelectedGrid.ToString() + ": Biome " + strconv.Itoa(b)
+	b := SelectedGrid.Biome
+	return "Grid " + SelectedGridDesig.ToString() + ": Biome " + strconv.Itoa(b)
 }

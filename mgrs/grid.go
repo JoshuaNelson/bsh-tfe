@@ -13,6 +13,10 @@ type GridDesignation struct {
 }
 
 func (g GridDesignation) AdjustEasting(x int) GridDesignation {
+	if x == 0 {
+		return g
+	}
+
 	carry := 0
 	g.SDC, carry = g.SDC.adjustEasting(x)
 
@@ -28,6 +32,10 @@ func (g GridDesignation) AdjustEasting(x int) GridDesignation {
 }
 
 func (g GridDesignation) AdjustNorthing(y int) GridDesignation {
+	if y == 0 {
+		return g
+	}
+
 	carry := 0
 	g.SDC, carry = g.SDC.adjustNorthing(y)
 

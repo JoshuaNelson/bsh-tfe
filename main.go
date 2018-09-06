@@ -23,7 +23,11 @@ func main() {
 	world.SelectedPlanet = world.InitPlanet("Terra")
 	grid, err := mgrs.StringToGridDesignation("2C GB 000 999")
 	check(err)
-	control.SelectedGrid = grid
+	control.ViewGridDesig = grid
+	control.CursorGridDesig = grid
+	control.SelectedGridDesig = grid
+	control.SelectedGrid = world.SelectedPlanet.GetGrid(grid)
+	control.CursorGrid = control.SelectedGrid
 
 	logger.Debug("Initializing display.")
 	termbox.SetInputMode(termbox.InputEsc) // | termbox.InputMouse)
@@ -48,7 +52,8 @@ loop:
 
 		termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
 		draw.Frontend()
-		draw.Text(1, 25, control.SelectedGrid.ToString())
+		draw.Text(1, 4+40, "Cursor: " + control.CursorGridDesig.ToString())
+		draw.Text(1, 5+40, "Select: " + control.SelectedGridDesig.ToString())
 		termbox.Flush()
 	}
 }

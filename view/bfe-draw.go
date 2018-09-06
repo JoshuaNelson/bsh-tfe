@@ -152,37 +152,11 @@ func Terrain(x, y int, g *world.Grid) {
 		return
 	}
 
-	var ch1 rune = 0x0000
-	var ch2 rune = 0x0000
-
-	fgColor     := Color256(0)
-	bgColor     := Color256(0)
 	//fgSelColor  := Color256(1)
 	bgSelColor  := Color256(15)
 	cursorColor := Color256(1)
 
-	switch g.Biome {
-	case world.BIOME_ARID:
-		ch2 = UpArrow
-		fgColor = termbox.ColorBlack
-		bgColor = Color256(137)
-	case world.BIOME_FOREST:
-		ch2 = Delta
-		fgColor = Color256(22) // Dark Green Trees
-		bgColor = Color256(34) // Green Tile
-	case world.BIOME_GRASSLAND:
-		ch2 = DownArrow
-		fgColor = Color256(22) // Dark Green Trees
-		bgColor = Color256(40) // Light Green
-	case world.BIOME_ROCKY:
-		ch2 = Gravel
-		fgColor = Color256(249)
-		bgColor = Color256(245)
-	case world.BIOME_WATER:
-		ch2 = '^'
-		fgColor = Color256(81)
-		bgColor = Color256(27)
-	}
+	fgColor, bgColor, ch1, ch2 := world.StyleBiome(g.Biome, Color256)
 
 	if g == control.SelectedGrid {
 		//fgColor = fgSelColor

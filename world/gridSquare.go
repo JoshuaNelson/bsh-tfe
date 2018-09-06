@@ -2,9 +2,8 @@ package world
 
 import (
 	"bsh-tfe/mgrs"
+	"github.com/aquilax/go-perlin"
 	"logger"
-	"math/rand"
-	"time"
 )
 
 type GridSquare struct {
@@ -12,17 +11,19 @@ type GridSquare struct {
 }
 
 func initGridSquare(gsd mgrs.GridSquareDesignation) *GridSquare {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	var gs GridSquare
 	gs.Grid = make(map[mgrs.SixDigitCoordinate]*Grid)
+
+	logger.Debug("Spooling up Perlin noise generator. Cover your ears.")
+	var seed int64 = 65
+	p := perlin.NewPerlin(2, 2, 3, seed)
 
 	logger.Debug("Generating new Grid Square, %s.", gsd.ToString())
 	for x := 0; x <= mgrs.GridSquareSize; x++ {
 		for y := 0; y <= mgrs.GridSquareSize; y++ {
 			sdc := mgrs.SixDigitCoordinate{x, y}
-			//TODO generate random biomes
 			var g Grid
-			g.setBiome(r.Intn(5))
+			g.newGrid(p.Noise2D(float64(x)/10, float64(y)/10))
 			gs.Grid[sdc] = &g
 		}
 	}

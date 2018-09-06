@@ -21,7 +21,8 @@ func main() {
 
 	control.Init()
 	world.SelectedPlanet = world.InitPlanet("Terra")
-	grid, err := mgrs.StringToGridDesignation("2C GB 000 999")
+	//grid, err := mgrs.StringToGridDesignation("2C GB 000 999")
+	grid, err := mgrs.StringToGridDesignation("1C FC 902 052")
 	check(err)
 	control.ViewGridDesig = grid
 	control.CursorGridDesig = grid

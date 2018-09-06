@@ -9,7 +9,13 @@ import (
 
 func Init() {
 	CommandLine = InitMainCommandLine()
+	TerrainMap = Map{}
 	SetInputMode(CommandLine)
+}
+
+func setMapInput(s string) string {
+	SetInputMode(TerrainMap)
+	return ""
 }
 
 func usageRoot(s string) string {
@@ -23,7 +29,7 @@ func gridSelect(s string) string {
 		return "Invalid grid designation."
 	}
 
-	world.SelectedGrid = grid
+	SelectedGrid = grid
 	return "Selected grid " + grid.ToString() + "."
 }
 
@@ -34,8 +40,8 @@ func gridSetBiome(s string) string {
 		return "Usage: map set biome <biome>"
 	}
 
-	if world.SelectedGrid != (mgrs.GridDesignation{}) {
-		grid := world.Terra.GetGrid(world.SelectedGrid)
+	if SelectedGrid != (mgrs.GridDesignation{}) {
+		grid := world.SelectedPlanet.GetGrid(SelectedGrid)
 		grid.Biome = t
 		return "Set biome successfully."
 	} else {
@@ -44,6 +50,6 @@ func gridSetBiome(s string) string {
 }
 
 func gridInfo(s string) string {
-	b := world.Terra.GetGrid(world.SelectedGrid).Biome
-	return "Grid " + world.SelectedGrid.ToString() + ": Biome " + strconv.Itoa(b)
+	b := world.SelectedPlanet.GetGrid(SelectedGrid).Biome
+	return "Grid " + SelectedGrid.ToString() + ": Biome " + strconv.Itoa(b)
 }

@@ -90,5 +90,8 @@ func InitMainCommandLine() Terminal {
 	cmdGroup.addSubCmd("move")
 	cmdGroup.addSubCmd("stop")
 
+	cmdMap := term.CmdTree.addSubCmd("map")
+	cmdMap.function = setMapInput
+
 	return term
 }

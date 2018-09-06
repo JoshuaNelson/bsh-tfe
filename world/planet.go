@@ -5,15 +5,19 @@ import (
 	"logger"
 )
 
+var SelectedPlanet *Planet
+
 type Planet struct {
+	Name string
 	GridZone map[mgrs.GridZoneDesignation]*GridZone
 }
 
-func initPlanet() *Planet {
+func InitPlanet(name string) *Planet {
 	var p Planet
+	p.Name = name
 	p.GridZone = make(map[mgrs.GridZoneDesignation]*GridZone)
 
-	logger.Debug("Generating new planet.")
+	logger.Debug("Generating new planet, %s.", name)
 	return &p
 }
 

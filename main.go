@@ -2,6 +2,7 @@ package main
 
 import (
 	"bsh-tfe/control"
+	"bsh-tfe/mgrs"
 	"bsh-tfe/view"
 	"bsh-tfe/world"
 	"github.com/nsf/termbox-go"
@@ -19,7 +20,10 @@ func main() {
 	defer termbox.Close()
 
 	control.Init()
-	world.Init()
+	world.SelectedPlanet = world.InitPlanet("Terra")
+	grid, err := mgrs.StringToGridDesignation("2C GB 000 999")
+	check(err)
+	control.SelectedGrid = grid
 
 	logger.Debug("Initializing display.")
 	termbox.SetInputMode(termbox.InputEsc) // | termbox.InputMouse)
@@ -43,8 +47,8 @@ loop:
 		}
 
 		termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
-
 		draw.Frontend()
+		draw.Text(1, 25, control.SelectedGrid.ToString())
 		termbox.Flush()
 	}
 }

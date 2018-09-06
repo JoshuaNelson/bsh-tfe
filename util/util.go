@@ -4,7 +4,7 @@ import (
 	"strconv"
 )
 
-func WrapRuneSlice(s []rune, start int, end int) ([]rune) {
+func WrapRuneSlice(s []rune, start int, end int) []rune {
 	// Check for edge start and end values
 	if start < 0 {
 		panic("slice start out of range")

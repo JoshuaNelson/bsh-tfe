@@ -12,54 +12,67 @@ type GridDesignation struct {
 	SDC SixDigitCoordinate
 }
 
+func (g GridDesignation) AdjustEasting(x int) GridDesignation {
+	carry := 0
+	g.SDC, carry = g.SDC.adjustEasting(x)
+
+	if carry != 0 {
+		g.GSD, carry = g.GSD.adjustEasting(carry)
+	}
+
+	if carry != 0 {
+		g.GZD, carry = g.GZD.adjustEasting(carry)
+	}
+
+	return g
+}
+
+func (g GridDesignation) AdjustNorthing(y int) GridDesignation {
+	carry := 0
+	g.SDC, carry = g.SDC.adjustNorthing(y)
+
+	if carry != 0 {
+		g.GSD, carry = g.GSD.adjustNorthing(carry)
+	}
+
+	if carry != 0 {
+		g.GZD, carry = g.GZD.adjustNorthing(carry)
+	}
+
+	return g
+}
+
 func StringToGridDesignation(s string) (GridDesignation, error) {
-	e := fmt.Errorf("Invalid MGRS.")
+	var gzd GridZoneDesignation
+	var gsd GridSquareDesignation
+	var sdc SixDigitCoordinate
+	var err error = nil
+	e := fmt.Errorf("Invalid grid designation.")
 	gridWord := strings.Split(s, " ")
 
-	// Build the GridZoneDesignation
-	var gzd GridZoneDesignation
-	if len(gridWord) >= 4 {
-		var err error = nil
-		gzd, err = stringToGZD(gridWord[0])
-		if err != nil {
-			logger.Debug("Invalid GZD")
-			return GridDesignation{}, err
-		}
-		gridWord = gridWord[1:]
-	} else if currentGZD != (GridZoneDesignation{}) {
-		gzd = currentGZD
-	} else {
+	if len(gridWord) < 4 {
+		logger.Debug("Invalid grid designation.")
 		return GridDesignation{}, e
+	}
+
+	// Build the GridZoneDesignation
+	gzd, err = stringToGZD(gridWord[0])
+	if err != nil {
+		logger.Debug("Invalid grid zone designation.")
+		return GridDesignation{}, err
 	}
 
 	// Build the GridSquareDesignation
-	var gsd GridSquareDesignation
-	if len(gridWord) >= 3 {
-		var err error = nil
-		gsd, err = stringToSID(gridWord[0])
-		if err != nil {
-			logger.Debug("Invalid square identifier")
-			return GridDesignation{}, err
-		}
-		gridWord = gridWord[1:]
-	} else if currentGSD != (GridSquareDesignation{}) {
-		gsd = currentGSD
-	} else {
-		return GridDesignation{}, e
-	}
-
-	if !gsd.validEasting(gzd) {
-		logger.Debug("Invalid easting square identifier coordinate.")
-		return GridDesignation{}, e
-	} else if !gsd.validNorthing(gzd) {
-		logger.Debug("Invalid northing square identifier coordinate.")
-		return GridDesignation{}, e
+	gsd, err = stringToGSD(gridWord[1], gzd)
+	if err != nil {
+		logger.Debug("Invalid grid square designation.")
+		return GridDesignation{}, err
 	}
 
 	// Build the SixDigitCoordinate
-	var sdc SixDigitCoordinate
-	sdc, err := stringToSDC(gridWord[0], gridWord[1])
+	sdc, err = stringToSDC(gridWord[2], gridWord[3])
 	if err != nil {
+		logger.Debug("Invalid six digit coordinate.")
 		return GridDesignation{}, err
 	}
 

@@ -3,24 +3,25 @@ package world
 import (
 	"bsh-tfe/mgrs"
 	"logger"
+	"math/rand"
+	"time"
 )
-
-var gridSquareSize int = 999
 
 type GridSquare struct {
 	Grid map[mgrs.SixDigitCoordinate]*Grid
 }
 
 func initGridSquare(gsd mgrs.GridSquareDesignation) *GridSquare {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	var gs GridSquare
 	gs.Grid = make(map[mgrs.SixDigitCoordinate]*Grid)
 
 	logger.Debug("Generating new Grid Square, %s.", gsd.ToString())
-	for x := 0; x < gridSquareSize; x++ {
-		for y := 0; y < gridSquareSize; y++ {
+	for x := 0; x <= mgrs.GridSquareSize; x++ {
+		for y := 0; y <= mgrs.GridSquareSize; y++ {
 			sdc := mgrs.SixDigitCoordinate{x, y}
 			//TODO generate random biomes
-			gs.Grid[sdc] = &Grid{BIOME_GRASSLAND}
+			gs.Grid[sdc] = &Grid{r.Intn(4)}
 		}
 	}
 

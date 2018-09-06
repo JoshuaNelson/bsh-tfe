@@ -49,7 +49,7 @@ func Frontend() {
 	x, y := 1, 1
 	boxWidth, boxHeight:= frontendSquareSize, frontendSquareSize
 	Console(x, y, control.CommandLine.Buffer.String())
-	World(x, y+1, boxWidth, boxHeight, world.SelectedGrid)
+	World(x, y+1, boxWidth, boxHeight, control.SelectedGrid)
 	//Text(x+1, y+3+boxHeight, msgBuf)
 }
 
@@ -61,23 +61,25 @@ func Text(x, y int, text string) {
 
 func World(x, y, width, height int, g mgrs.GridDesignation) {
 	Box(x, y, width, height)
-	origNorthing := g.SDC.Northing
-	//origEasting :=  g.SDC.Easting
+	// This is kind of hacky clean up later when we separate cursor and view
+	iter := g
+	iter = iter.AdjustEasting(-10)
+	iter = iter.AdjustNorthing(10)
 
 	for i := 0; i < width; i++ {
 		for j := 0; j < height; j++ {
-			Terrain(x+1+i*2, y+j+1, g)
-			g.SDC.Northing -= 1
+			Terrain(x+1+i*2, y+j+1, iter)
+			iter = iter.AdjustNorthing(-1)
 		}
-		g.SDC.Northing = origNorthing
-		g.SDC.Easting -= 1
+		iter = iter.AdjustNorthing(height)
+		iter = iter.AdjustEasting(1)
 	}
 }
 
 func Terrain(x, y int, g mgrs.GridDesignation) {
 	var ch1 rune = 0x0000
 	var ch2 rune = 0x0000
-	grid := world.Terra.GetGrid(g)
+	grid := world.SelectedPlanet.GetGrid(g)
 
 	if grid == nil {
 		return
@@ -107,7 +109,7 @@ func Terrain(x, y int, g mgrs.GridDesignation) {
 		bgColor = termbox.Attribute(246)
 	}
 
-	if g == world.SelectedGrid {
+	if g == control.SelectedGrid {
 		ch1 = Machine
 		termbox.SetCell(x,   y, ch1, fgSelColor, bgSelColor)
 		termbox.SetCell(x+1, y, ch2, fgSelColor, bgSelColor)

@@ -8,7 +8,7 @@ var SelectedGrid mgrs.GridDesignation
 
 var BiomeLD float64 = -0.4
 var BiomeL0 float64 = -0.2
-var BiomeL1 float64 = -0.1
+var BiomeL1 float64 = -0.12
 var BiomeL2 float64 = 0
 var BiomeL3 float64 = 0.2
 var BiomeL4 float64 = 0.5

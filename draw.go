@@ -1,16 +1,23 @@
-package draw
+package main
 
 import (
 	"github.com/nsf/termbox-go"
-	"bsh-tfe/control"
-	"bsh-tfe/mgrs"
-	"bsh-tfe/world"
 //	"time"
 //	"strconv"
 )
 
 var ConsolePrompt string = ">"
 var frontendSquareSize = 40
+
+func color256(c int) termbox.Attribute {
+	if c < 0 {
+		c = 0
+	} else if c > 255 {
+		c = 255
+	}
+
+	return termbox.Attribute(c+1)
+}
 
 func Box(x, y, height, width int) {
 	// Draw corners
@@ -65,46 +72,46 @@ func CellSelected(x, y int, r rune) {
 }
 
 func Console(x, y int, consoleBuf string) {
-	Text(x, y, ConsolePrompt)
-	Text(x + len(ConsolePrompt) + 1, y, consoleBuf)
+	drawText(x, y, ConsolePrompt)
+	drawText(x + len(ConsolePrompt) + 1, y, consoleBuf)
 }
 
-func Frontend() {
+func drawFrontend() {
 	x, y := 1, 1
 	boxWidth, boxHeight:= frontendSquareSize, frontendSquareSize
-	Console(x, y, control.CommandLine.Buffer.String())
-	World(x, y+1, boxWidth, boxHeight, control.ViewGridDesig)
-	//Text(x+1, y+3+boxHeight, msgBuf)
+	Console(x, y, Control.cli.Buffer.String())
+	World(x, y+1, boxWidth, boxHeight, Control.gameMap.mapGridDes)
+	//drawText(x+1, y+3+boxHeight, msgBuf)
 }
 
-func Text(x, y int, text string) {
+func drawText(x, y int, text string) {
 	for i, ch := range text {
 		Cell(x + i, y, ch)
 	}
 }
 
-func World(x, y, width, height int, g mgrs.GridDesignation) {
+func World(x, y, width, height int, g GridDesignation) {
 	//startTime := time.Now()
 	//Box(x, y, width, height)
 	DBox(x, y, width, height)
 	// This is kind of hacky clean up later when we separate cursor and view
-	g = g.AdjustEasting(0 - (frontendSquareSize/2))
-	g = g.AdjustNorthing(0 - (frontendSquareSize/2))
+	g = g.adjustEasting(0 - (frontendSquareSize/2))
+	g = g.adjustNorthing(0 - (frontendSquareSize/2))
 	curGridE := g
 	curGridEN := g
 
 	mapX := x+1
 	mapY := y+height
 	// draw map left
-	var eastingGrid *world.Grid
-	var northingGrid *world.Grid
+	var eastingGrid *Grid
+	var northingGrid *Grid
 	var adjustEasting bool = false
 	for e := 0; e < width; e++ {
 		if eastingGrid == nil {
 			// Just starting. Do lookup, set eastingGrid.
 			adjustEasting = true
-			curGridE = g.AdjustEasting(e)
-			eastingGrid = world.SelectedPlanet.GetGrid(curGridE)
+			curGridE = g.adjustEasting(e)
+			eastingGrid = Control.getGrid(curGridE)
 		} else {
 			if eastingGrid.East != nil {
 				// East grid shortcut is available, avoid lookup
@@ -112,8 +119,8 @@ func World(x, y, width, height int, g mgrs.GridDesignation) {
 			} else {
 				// Do lookup, save shortcut for future
 				adjustEasting = true
-				curGridE = g.AdjustEasting(e)
-				eastingGrid.East = world.SelectedPlanet.GetGrid(curGridE)
+				curGridE = g.adjustEasting(e)
+				eastingGrid.East = Control.getGrid(curGridE)
 				eastingGrid = eastingGrid.East
 			}
 		}
@@ -129,10 +136,10 @@ func World(x, y, width, height int, g mgrs.GridDesignation) {
 					// Do lookup, save shortcut
 					if !adjustEasting {
 						adjustEasting = true
-						curGridE = g.AdjustEasting(e)
+						curGridE = g.adjustEasting(e)
 					}
-					curGridEN = curGridE.AdjustNorthing(n)
-					northingGrid.North = world.SelectedPlanet.GetGrid(curGridEN)
+					curGridEN = curGridE.adjustNorthing(n)
+					northingGrid.North = Control.getGrid(curGridEN)
 					northingGrid = northingGrid.North
 				}
 			}
@@ -144,37 +151,41 @@ func World(x, y, width, height int, g mgrs.GridDesignation) {
 	//durationSec := time.Since(startTime).Seconds()
 	//durationString := strconv.FormatFloat(durationSec, 'f', -1, 64)
 	//durationString += " sec"
-	//Text(mapX, mapY+2, durationString)
+	//drawText(mapX, mapY+2, durationString)
 }
 
-func Terrain(x, y int, g *world.Grid) {
+func Terrain(x, y int, g *Grid) {
 	if g == nil {
 		return
 	}
 
-	//fgSelColor  := Color256(1)
+	//fgSelColor  := color256(1)
 
-	fgColor2, bgColor, ch1, ch2 := world.StyleBiome(g.Biome, Color256)
-	bgSelColor  := Color256(15)
-	cursorColor := Color256(1)
+	fgColor2, bgColor2, ch1, ch2 := StyleBiome(g.Biome)
+	bgSelColor  := color256(15)
+	cursorColor := color256(1)
 	fgColor1    := fgColor2
+	bgColor1    := bgColor2
 
 	if g.Unit != nil {
-		fgColor1, ch1 = g.Unit.Style(Color256)
+		fgColor1 = color256(teamColor)|termbox.AttrBold
+		bgColor1 = color256(236)
+		ch1 = g.Unit.style()
 	}
 
-	if g == control.SelectedGrid {
+	if g == Control.gameMap.selGrid {
 		//fgColor = fgSelColor
-		bgColor = bgSelColor
+		bgColor1 = bgSelColor
+		bgColor2 = bgSelColor
 	}
 
-	if g == control.CursorGrid {
+	if g == Control.gameMap.curGrid {
 		ch1 = 0x27EA
 		ch2 = 0x27EB
 		fgColor1 = cursorColor
 		fgColor2 = cursorColor
 	}
 
-	termbox.SetCell(x,   y, ch1, fgColor1, bgColor)
-	termbox.SetCell(x+1, y, ch2, fgColor2, bgColor)
+	termbox.SetCell(x,   y, ch1, fgColor1, bgColor1)
+	termbox.SetCell(x+1, y, ch2, fgColor2, bgColor2)
 }

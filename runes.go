@@ -1,4 +1,4 @@
-package draw
+package main
 // https://www.charbase.com/block/miscellaneous-technical
 
 var LineStar        rune = 0x2217
@@ -145,7 +145,7 @@ var TripHashVert    rune = 0x29FB // Heat Sink
 
 // 0x2B12 Half shaded shapes
 
-var RadarSplotch    rune = 0x2E0E // Splotch on radar?
+//var RadarSplotch    rune = 0x2E0E // Splotch on radar?
 var DoubleDiagSmall rune = 0x2E17
 var OverpassThree   rune = 0x2FAE
 

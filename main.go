@@ -1,13 +1,11 @@
 package main
 
 import (
-	"bsh-tfe/control"
-	"bsh-tfe/mgrs"
-	"bsh-tfe/view"
-	"bsh-tfe/world"
 	"github.com/nsf/termbox-go"
 	"logger"
 )
+
+var teamColor int = 33
 
 func check(e error) { if e != nil { panic(e) } }
 
@@ -19,23 +17,14 @@ func main() {
 	check(termbox.Init())
 	defer termbox.Close()
 
-	control.Init()
-	//world.InitUnitMap()
-	world.SelectedPlanet = world.InitPlanet("Terra")
-	//grid, err := mgrs.StringToGridDesignation("2C GB 000 999")
-	grid, err := mgrs.StringToGridDesignation("1C FC 803 205")
-	check(err)
-	control.ViewGridDesig = grid
-	control.CursorGridDesig = grid
-	control.SelectedGridDesig = grid
-	control.SelectedGrid = world.SelectedPlanet.GetGrid(grid)
-	control.CursorGrid = control.SelectedGrid
+	Control = initControl()
 
 	logger.Debug("Initializing display.")
 	termbox.SetInputMode(termbox.InputEsc) // | termbox.InputMouse)
 	termbox.SetOutputMode(termbox.Output256)
 	termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
-	draw.Frontend()
+
+	drawFrontend()
 	termbox.Flush()
 
 	logger.Debug("Polling for events.")
@@ -46,16 +35,16 @@ loop:
 			if event.Key == termbox.KeyCtrlX {
 				break loop
 			}
-			control.InputMode().EventHandler(event)
+			Control.inputMode.EventHandler(event)
 
 		case termbox.EventError:
 			panic(event.Err)
 		}
 
 		termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
-		draw.Frontend()
-		draw.Text(1, 4+40, "Cursor: " + control.CursorGridDesig.ToString())
-		draw.Text(1, 5+40, "Select: " + control.SelectedGridDesig.ToString())
+		drawFrontend()
+		drawText(1, 4+40, "Cursor: " + Control.gameMap.curGridDes.ToString())
+		drawText(1, 5+40, "Select: " + Control.gameMap.curGridDes.ToString())
 		termbox.Flush()
 	}
 }

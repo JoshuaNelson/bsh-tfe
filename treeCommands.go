@@ -1,22 +1,9 @@
-package control
+package main
 
 import (
-	"bsh-tfe/mgrs"
-	"bsh-tfe/world"
 	"strconv"
 	"strings"
 )
-
-func Init() {
-	CommandLine = InitMainCommandLine()
-	TerrainMap = Map{}
-	SetInputMode(CommandLine)
-}
-
-func setMapInput(s string) string {
-	SetInputMode(TerrainMap)
-	return ""
-}
 
 func usageRoot(s string) string {
 	msg := strings.Split(s, " ")
@@ -24,23 +11,25 @@ func usageRoot(s string) string {
 }
 
 func gridSelect(s string) string {
-	grid, err := mgrs.StringToGridDesignation(s)
+	grid, err := StringToGridDesignation(s)
 	if err != nil {
 		return "Invalid grid designation."
 	}
 
-	SelectedGridDesig = grid
-	SelectedGrid = world.SelectedPlanet.GetGrid(grid)
+	Control.gameMap.selGridDes = grid
+	Control.gameMap.selGrid = Control.getGrid(grid)
 	return "Selected grid " + grid.ToString() + "."
 }
 
 func gridGoto(s string) string {
-	grid, err := mgrs.StringToGridDesignation(s)
+	grid, err := StringToGridDesignation(s)
 	if err != nil {
 		return "Invalid grid designation."
 	}
 
-	ViewGridDesig = grid
+	Control.gameMap.mapGridDes = grid
+	Control.gameMap.curGridDes = grid
+	Control.gameMap.curGrid = Control.getGrid(grid)
 	return "Viewing grid " + grid.ToString() + "."
 	}
 
@@ -51,8 +40,8 @@ func gridSetBiome(s string) string {
 		return "Usage: map set biome <biome>"
 	}
 
-	if SelectedGrid != nil {
-		SelectedGrid.Biome = t
+	if Control.gameMap.selGrid != nil {
+		Control.gameMap.selGrid.Biome = t
 		return "Set biome successfully."
 	} else {
 		return "No grid selected. Use: map select <grid>"
@@ -60,6 +49,6 @@ func gridSetBiome(s string) string {
 }
 
 func gridInfo(s string) string {
-	b := SelectedGrid.Biome
-	return "Grid " + SelectedGridDesig.ToString() + ": Biome " + strconv.Itoa(b)
+	b := Control.gameMap.selGrid.Biome
+	return "Grid " + Control.gameMap.selGridDes.ToString() + ": Biome " + strconv.Itoa(b)
 }

@@ -1,11 +1,5 @@
 package world
 
-import (
-	"bsh-tfe/mgrs"
-)
-
-var SelectedGrid mgrs.GridDesignation
-
 var BiomeLD float64 = -0.4
 var BiomeL0 float64 = -0.2
 var BiomeL1 float64 = -0.12
@@ -20,6 +14,7 @@ type Grid struct {
 	//South *Grid
 	East  *Grid
 	//West  *Grid
+	Unit Unit
 }
 
 func (g *Grid) setBiome(b int) {

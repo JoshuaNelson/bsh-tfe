@@ -85,6 +85,8 @@ func InitMainCommandLine() Terminal {
 	cmdUnit.addSubCmd("scan")
 	cmdUnitBuild := cmdUnit.addSubCmd("build")
 	cmdUnitBuild.addSubCmd("building")
+	//cmdUnitSpawn := cmdUnit.addSubCmd("spawn")
+	//cmdUnitSpawn.function = world.UnitSpawn
 
 	cmdGroup := term.CmdTree.addSubCmd("group")
 	cmdGroupList := cmdGroup.addSubCmd("list")

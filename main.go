@@ -20,9 +20,10 @@ func main() {
 	defer termbox.Close()
 
 	control.Init()
+	//world.InitUnitMap()
 	world.SelectedPlanet = world.InitPlanet("Terra")
 	//grid, err := mgrs.StringToGridDesignation("2C GB 000 999")
-	grid, err := mgrs.StringToGridDesignation("1C FC 902 052")
+	grid, err := mgrs.StringToGridDesignation("1C FC 803 205")
 	check(err)
 	control.ViewGridDesig = grid
 	control.CursorGridDesig = grid

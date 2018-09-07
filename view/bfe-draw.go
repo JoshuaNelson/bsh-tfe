@@ -153,10 +153,15 @@ func Terrain(x, y int, g *world.Grid) {
 	}
 
 	//fgSelColor  := Color256(1)
+
+	fgColor2, bgColor, ch1, ch2 := world.StyleBiome(g.Biome, Color256)
 	bgSelColor  := Color256(15)
 	cursorColor := Color256(1)
+	fgColor1    := fgColor2
 
-	fgColor, bgColor, ch1, ch2 := world.StyleBiome(g.Biome, Color256)
+	if g.Unit != nil {
+		fgColor1, ch1 = g.Unit.Style(Color256)
+	}
 
 	if g == control.SelectedGrid {
 		//fgColor = fgSelColor
@@ -166,9 +171,10 @@ func Terrain(x, y int, g *world.Grid) {
 	if g == control.CursorGrid {
 		ch1 = 0x27EA
 		ch2 = 0x27EB
-		fgColor = cursorColor
+		fgColor1 = cursorColor
+		fgColor2 = cursorColor
 	}
 
-	termbox.SetCell(x,   y, ch1, fgColor, bgColor)
-	termbox.SetCell(x+1, y, ch2, fgColor, bgColor)
+	termbox.SetCell(x,   y, ch1, fgColor1, bgColor)
+	termbox.SetCell(x+1, y, ch2, fgColor2, bgColor)
 }

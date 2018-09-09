@@ -18,7 +18,7 @@ type Map struct {
 }
 
 func (m *Map) initMap() {
-	m.initPlanet("Terra") // Hardcoded for now
+	m.initPlanet("Terra", 65) // Hardcoded for now
 	grid, err := StringToGridDesignation("1C FC 803 205")
 	check(err)
 	m.selGrid = m.planet.getGrid(grid)
@@ -29,10 +29,11 @@ func (m *Map) initMap() {
 
 }
 
-func (m *Map) initPlanet(name string) {
+func (m *Map) initPlanet(name string, seed int) {
 	m.planet = &planet{}
 	m.planet.name = name
 	m.planet.gridZone = make(map[GridZoneDesignation]*GridZone)
+	m.planet.seed = seed
 
 	logger.Debug("Generating new planet, %s.", name)
 }

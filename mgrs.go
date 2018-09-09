@@ -111,6 +111,7 @@ func (gz *GridZone) getGrid(g GridDesignation) *Grid {
 type planet struct {
 	name string
 	gridZone map[GridZoneDesignation]*GridZone
+	seed int
 }
 
 func (p *planet) getGrid(g GridDesignation) *Grid {

@@ -43,8 +43,8 @@ loop:
 
 		termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
 		drawFrontend()
-		drawText(1, 4+40, "Cursor: " + Control.gameMap.curGridDes.ToString())
-		drawText(1, 5+40, "Select: " + Control.gameMap.curGridDes.ToString())
+		drawText(1, 1+40, "Cursor: " + Control.gameMap.curGridDes.ToString())
+		drawText(1, 2+40, "Select: " + Control.gameMap.selGridDes.ToString())
 		termbox.Flush()
 	}
 }

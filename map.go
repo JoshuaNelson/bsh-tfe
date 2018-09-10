@@ -86,8 +86,12 @@ func (m *Map) EventHandler(event termbox.Event) {
 
 	}
 
-	// Focus map
 	switch event.Ch {
+	case 's':
+		m.selGrid = m.curGrid
+		m.selGridDes = m.curGridDes
+		return
+
 	case 't':
 		Control.setInputMode(Control.cli)
 		return
@@ -114,6 +118,10 @@ func (m *Map) EventHandler(event termbox.Event) {
 	case 'l': // vim right
 		m.curGridDes = m.curGridDes.adjustEasting(1)
 		m.curGrid = Control.getGrid(m.curGridDes)
+		return
+
+	case 'm': // Move unit
+		moveUnit(m.selGrid, m.curGrid)
 		return
 	}
 }

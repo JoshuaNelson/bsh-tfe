@@ -20,7 +20,7 @@ func initControl() Controller {
 	control.gameMap = &Map{}
 	control.gameMap.initMap()
 
-	control.setInputMode(control.cli)
+	control.setInputMode(control.gameMap)
 
 	return control
 }
@@ -68,6 +68,7 @@ func (cli *CommandLine) EventHandler(event termbox.Event) {
 			logger.Debug("Running with msg %s", msg)
 			cmd.Run(msg)
 		}
+		Control.setInputMode(Control.gameMap)
 		return
 
 	case termbox.KeyBackspace, termbox.KeyBackspace2:
@@ -80,6 +81,10 @@ func (cli *CommandLine) EventHandler(event termbox.Event) {
 
 	case termbox.KeySpace:
 		cli.Buffer.WriteRune(0x0020) // Space
+		return
+
+	case termbox.KeyEsc:
+		Control.setInputMode(Control.gameMap)
 		return
 
 	case termbox.KeyArrowUp, termbox.KeyArrowDown, termbox.KeyArrowRight,
@@ -142,9 +147,6 @@ func (cli *CommandLine) initCommands() {
 	cmdGridGoto := cmdGrid.addSubCmd("goto")
 	cmdGridGoto.function = gridGoto
 	cmdGrid.addSubCmd("bookmark")
-	cmdGridSet := cmdGrid.addSubCmd("set")
-	cmdGridSetBiome := cmdGridSet.addSubCmd("biome")
-	cmdGridSetBiome.function = gridSetBiome
 
 	cmdUnit := cli.CmdTree.addSubCmd("unit")
 	cmdUnitList := cmdUnit.addSubCmd("list")

@@ -12,17 +12,19 @@ import (
  * GRID GRID GRID
  */
 type Grid struct {
-	Biome int
+	Biome Biome
+	Elev float64
 	North *Grid
 	East  *Grid
 	Unit Unit
 }
 
-func (g *Grid) setBiome(b int) {
+func (g *Grid) setBiome(b Biome) {
 	g.Biome = b
 }
 
 func (g *Grid) newGrid(n float64) {
+	g.Elev = n
 	switch {
 	case n < BiomeLD:
 		g.setBiome(BiomeDeepwater)

@@ -33,22 +33,7 @@ func gridGoto(s string) string {
 	return "Viewing grid " + grid.ToString() + "."
 	}
 
-func gridSetBiome(s string) string {
-	msg := strings.Split(s, " ")
-	t, err := strconv.Atoi(msg[0])
-	if err != nil {
-		return "Usage: map set biome <biome>"
-	}
-
-	if Control.gameMap.selGrid != nil {
-		Control.gameMap.selGrid.Biome = t
-		return "Set biome successfully."
-	} else {
-		return "No grid selected. Use: map select <grid>"
-	}
-}
-
 func gridInfo(s string) string {
 	b := Control.gameMap.selGrid.Biome
-	return "Grid " + Control.gameMap.selGridDes.ToString() + ": Biome " + strconv.Itoa(b)
+	return "Grid " + Control.gameMap.selGridDes.ToString() + ": Biome " + strconv.Itoa(b.code)
 }

@@ -11,24 +11,31 @@ var Control Controller
 /*
  * CONTROLLER
  */
-func initControl() Controller {
-	var control Controller
-
-	control.cli  = &CommandLine{nil, &strings.Builder{}}
-	control.cli.initCommands()
-
-	control.gameMap = &Map{}
-	control.gameMap.initMap()
-
-	control.setInputMode(control.gameMap)
-
-	return control
+type Controller struct {
+	inputMode  Input
+	cli        *CommandLine
+	gameMap    *Map
+	viewUpdate chan int
+	quit       chan int
 }
 
-type Controller struct {
-	inputMode Input
-	cli *CommandLine
-	gameMap *Map
+func (ctl* Controller) Init() {
+	ctl.cli  = &CommandLine{nil, &strings.Builder{}}
+	ctl.cli.initCommands()
+
+	ctl.gameMap = &Map{}
+	ctl.gameMap.Init()
+
+	ctl.viewUpdate = make(chan int)
+	ctl.quit = make(chan int)
+
+	ctl.setInputMode(ctl.gameMap)
+	go eventListener()
+}
+
+func (ctl* Controller) Close() {
+	close(ctl.viewUpdate)
+	close(ctl.quit)
 }
 
 func (ctl *Controller) getGrid(g GridDesignation) *Grid {
@@ -41,6 +48,15 @@ func (ctl *Controller) planet() *planet {
 
 func (ctl *Controller) setInputMode(mode Input) {
 	ctl.inputMode = mode
+}
+
+func (ctl *Controller) Draw() {
+	ctl.viewUpdate <- 0
+}
+
+func (ctl *Controller) Quit() {
+	logger.Debug("Calling controller quit")
+	ctl.quit <- 0
 }
 
 /*
@@ -67,6 +83,7 @@ func (cli *CommandLine) EventHandler(event termbox.Event) {
 		if cmd != nil {
 			logger.Debug("Running with msg %s", msg)
 			cmd.Run(msg)
+			Control.Draw()
 		}
 		Control.setInputMode(Control.gameMap)
 		return
@@ -76,11 +93,13 @@ func (cli *CommandLine) EventHandler(event termbox.Event) {
 		if len(tmpInput) > 0 {
 			cli.Buffer.Reset()
 			cli.Buffer.WriteString(tmpInput[0:len(tmpInput)-1])
+			Control.Draw()
 		}
 		return
 
 	case termbox.KeySpace:
 		cli.Buffer.WriteRune(0x0020) // Space
+		Control.Draw()
 		return
 
 	case termbox.KeyEsc:
@@ -95,6 +114,7 @@ func (cli *CommandLine) EventHandler(event termbox.Event) {
 	}
 
 	cli.Buffer.WriteRune(event.Ch)
+	Control.Draw()
 	return
 }
 
@@ -207,4 +227,24 @@ func (cmd *Command) listCommands(s string) string {
 		msg = append(msg, cmd.text)
 	}
 	return "Commands: " + strings.Join(msg, ", ")
+}
+
+/*
+ * LISTENER LISTENER LISTENER
+ */
+func eventListener() {
+	logger.Debug("Initializing event listener.")
+loop:
+	for {
+		switch event := termbox.PollEvent(); event.Type {
+		case termbox.EventKey:
+			if event.Key == termbox.KeyCtrlX {
+				break loop
+			}
+			Control.inputMode.EventHandler(event)
+		case termbox.EventError:
+			Control.Quit()
+		}
+	}
+	Control.Quit()
 }

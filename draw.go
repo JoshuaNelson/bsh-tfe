@@ -40,6 +40,9 @@ func drawFrontend() {
 	boxWidth, boxHeight:= frontendSquareSize, frontendSquareSize
 	Console(x, y, Control.cli.Buffer.String())
 	World(x, y, boxWidth, boxHeight, Control.gameMap.mapGridDes)
+	drawText(1, 1+frontendSquareSize, "Cursor: " + Control.gameMap.curGridDes.ToString())
+	drawText(1, 2+frontendSquareSize, "Select: " + Control.gameMap.selGridDes.ToString())
+
 }
 
 func drawText(x, y int, text string) {

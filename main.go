@@ -17,7 +17,8 @@ func main() {
 	check(termbox.Init())
 	defer termbox.Close()
 
-	Control = initControl()
+	Control.Init()
+	defer Control.Close()
 
 	logger.Debug("Initializing display.")
 	termbox.SetInputMode(termbox.InputEsc) // | termbox.InputMouse)
@@ -27,24 +28,17 @@ func main() {
 	drawFrontend()
 	termbox.Flush()
 
-	logger.Debug("Polling for events.")
 loop:
 	for {
-		switch event := termbox.PollEvent(); event.Type {
-		case termbox.EventKey:
-			if event.Key == termbox.KeyCtrlX {
-				break loop
-			}
-			Control.inputMode.EventHandler(event)
+		select {
+		case <-Control.viewUpdate:
+			termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
+			drawFrontend()
+			termbox.Flush()
 
-		case termbox.EventError:
-			panic(event.Err)
+		case <-Control.quit:
+			logger.Debug("Quitting main")
+			break loop
 		}
-
-		termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
-		drawFrontend()
-		drawText(1, 1+40, "Cursor: " + Control.gameMap.curGridDes.ToString())
-		drawText(1, 2+40, "Select: " + Control.gameMap.selGridDes.ToString())
-		termbox.Flush()
 	}
 }

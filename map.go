@@ -10,22 +10,18 @@ import (
  */
 type Map struct {
 	planet *planet
-	selGrid *Grid
 	curGrid *Grid
-	selGridDes GridDesignation
 	curGridDes GridDesignation
-	mapGridDes GridDesignation
+	focGridDes GridDesignation
 }
 
 func (m *Map) Init() {
 	m.initPlanet("Terra", 65) // Hardcoded for now
 	grid, err := StringToGridDesignation("1C FC 803 205")
 	check(err)
-	m.selGrid = m.planet.getGrid(grid)
-	m.curGrid = m.selGrid
-	m.selGridDes = grid
+	m.curGrid = m.planet.getGrid(grid)
 	m.curGridDes = grid
-	m.mapGridDes = grid
+	m.focGridDes = grid
 
 }
 
@@ -41,103 +37,57 @@ func (m *Map) initPlanet(name string, seed int) {
 func (m *Map) EventHandler(event termbox.Event) {
 	switch event.Key {
 	case termbox.KeyEsc:
-		Control.setInputMode(Control.cli)
-		Control.Draw()
-		return
+		setInputCLI()
 
 	case termbox.KeyEnter:
-		m.selGrid = m.curGrid
-		m.selGridDes = m.curGridDes
-		Control.Draw()
-		return
-
-	case termbox.KeyArrowUp:
-		m.curGridDes = m.curGridDes.adjustNorthing(1)
-		m.curGrid = Control.getGrid(m.curGridDes)
-		Control.Draw()
-		return
-
-	case termbox.KeyArrowDown:
-		m.curGridDes = m.curGridDes.adjustNorthing(-1)
-		m.curGrid = Control.getGrid(m.curGridDes)
-		Control.Draw()
-		return
-
-	case termbox.KeyArrowLeft:
-		m.curGridDes = m.curGridDes.adjustEasting(-1)
-		m.curGrid = Control.getGrid(m.curGridDes)
-		Control.Draw()
-		return
-
-	case termbox.KeyArrowRight:
-		m.curGridDes = m.curGridDes.adjustEasting(1)
-		m.curGrid = Control.getGrid(m.curGridDes)
-		Control.Draw()
-		return
+		//m.selectGrid()
 
 	case termbox.KeyBackspace, termbox.KeyBackspace2:
-		m.mapGridDes = m.selGridDes
-		m.curGridDes = m.selGridDes
-		m.curGrid = m.selGrid
-		Control.Draw()
-		return
+		//m.centerOnSelectedGrid()
+
+	case termbox.KeyArrowUp:
+		m.adjustNorthing(1)
+
+	case termbox.KeyArrowDown:
+		m.adjustNorthing(-1)
+
+	case termbox.KeyArrowLeft:
+		m.adjustEasting(-1)
+
+	case termbox.KeyArrowRight:
+		m.adjustEasting(1)
 
 	case termbox.KeyPgup:
-		m.curGridDes = m.curGridDes.adjustNorthing(10)
-		m.curGrid = Control.getGrid(m.curGridDes)
-		Control.Draw()
-		return
+		m.adjustNorthing(10)
 
 	case termbox.KeyPgdn:
-		m.curGridDes = m.curGridDes.adjustNorthing(-10)
-		m.curGrid = Control.getGrid(m.curGridDes)
-		Control.Draw()
-		return
+		m.adjustNorthing(-10)
 	}
 
 	switch event.Ch {
 	case 's':
-		m.selGrid = m.curGrid
-		m.selGridDes = m.curGridDes
-		Control.Draw()
-		return
+		//m.selectGrid()
 
 	case 't':
-		Control.setInputMode(Control.cli)
-		Control.Draw()
-		return
+		setInputCLI()
 
 	case 'f':
-		m.mapGridDes = m.curGridDes
-		Control.Draw()
-		return
+		m.focusOnGrid()
 
 	case 'k': // vim up
-		m.curGridDes = m.curGridDes.adjustNorthing(1)
-		m.curGrid = Control.getGrid(m.curGridDes)
-		Control.Draw()
-		return
+		m.adjustNorthing(1)
 
 	case 'j': // vim down
-		m.curGridDes = m.curGridDes.adjustNorthing(-1)
-		m.curGrid = Control.getGrid(m.curGridDes)
-		Control.Draw()
-		return
+		m.adjustNorthing(-1)
 
 	case 'h': // vim left
-		m.curGridDes = m.curGridDes.adjustEasting(-1)
-		m.curGrid = Control.getGrid(m.curGridDes)
-		Control.Draw()
-		return
+		m.adjustEasting(-1)
 
 	case 'l': // vim right
-		m.curGridDes = m.curGridDes.adjustEasting(1)
-		m.curGrid = Control.getGrid(m.curGridDes)
-		Control.Draw()
-		return
+		m.adjustEasting(1)
 
 	case 'm': // Move unit
-		moveUnit(m.selGrid, m.curGrid)
+		//moveUnit(m.selGrid, m.curGrid)
 		Control.Draw()
 		return
 	}

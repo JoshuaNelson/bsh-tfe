@@ -23,10 +23,6 @@ func Cell(x, y int, r rune) {
 	termbox.SetCell(x, y, r, termbox.ColorWhite, termbox.ColorBlack)
 }
 
-func CellSelected(x, y int, r rune) {
-	termbox.SetCell(x, y, r, termbox.ColorBlack, termbox.ColorWhite)
-}
-
 func Console(x, y int, consoleBuf string) {
 	if Control.inputMode != Control.cli {
 		return
@@ -39,10 +35,8 @@ func drawFrontend() {
 	x, y := 0, 0
 	boxWidth, boxHeight:= frontendSquareSize, frontendSquareSize
 	Console(x, y, Control.cli.Buffer.String())
-	World(x, y, boxWidth, boxHeight, Control.gameMap.mapGridDes)
+	World(x, y, boxWidth, boxHeight, Control.gameMap.focGridDes)
 	drawText(1, 1+frontendSquareSize, "Cursor: " + Control.gameMap.curGridDes.ToString())
-	drawText(1, 2+frontendSquareSize, "Select: " + Control.gameMap.selGridDes.ToString())
-
 }
 
 func drawText(x, y int, text string) {
@@ -127,15 +121,23 @@ func DrawGridSquare(x, y int, g *Grid) {
 		unitGraphic, unitBackground, unitForeground = g.Unit.style()
 	}
 
-	termbox.SetCell(x,   y, unitGraphic,  unitForeground,  unitBackground)
+	unitBackground = unitBackground
+	termbox.SetCell(x,   y, unitGraphic,  unitForeground,  biomeBackground)
 	termbox.SetCell(x+1, y, biomeGraphic, biomeForeground, biomeBackground)
 }
 
 func DrawCursor(x, y int, g *Grid) {
-	var cursorLeft  rune = '['
-	var cursorRight rune = ']'
-	var cursorColor termbox.Attribute = color256(9)|termbox.AttrBold
-	_, biomeBackground, _ := g.Biome.style()
-	termbox.SetCell(x,   y, cursorLeft,  cursorColor, biomeBackground)
-	termbox.SetCell(x+1, y, cursorRight, cursorColor, biomeBackground)
+	if g == nil { return }
+
+	biomeGraphic, biomeBackground, biomeForeground := g.Biome.style()
+	unitBackground, unitForeground := biomeBackground, biomeForeground
+	var unitGraphic rune = 0x0000
+
+	if g.Unit != nil {
+		unitGraphic, unitBackground, unitForeground = g.Unit.style()
+	}
+
+	unitBackground = unitBackground
+	termbox.SetCell(x,   y, unitGraphic,  unitForeground,  biomeBackground | termbox.AttrBold)
+	termbox.SetCell(x+1, y, biomeGraphic, biomeForeground, biomeBackground)
 }

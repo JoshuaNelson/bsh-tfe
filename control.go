@@ -154,23 +154,16 @@ func (cli *CommandLine) initCommands() {
 	cli.CmdTree.addSubCmd("exit")
 	cli.CmdTree.addSubCmd("help")
 
-	cmdList := cli.CmdTree.addSubCmd("list")
-	cmdList.function = cli.CmdTree.listCommands
+	cli.CmdTree.addSubCmd("list")
 
 	cmdGrid := cli.CmdTree.addSubCmd("grid")
-	cmdGridList := cmdGrid.addSubCmd("list")
-	cmdGridList.function = cmdGrid.listCommands
-	cmdGridSelect := cmdGrid.addSubCmd("select")
-	cmdGridSelect.function = gridSelect
-	cmdGridInfo := cmdGrid.addSubCmd("info")
-	cmdGridInfo.function = gridInfo
-	cmdGridGoto := cmdGrid.addSubCmd("goto")
-	cmdGridGoto.function = gridGoto
+	cmdGrid.addSubCmd("list")
+	cmdGrid.addSubCmd("info")
+	cmdGrid.addSubCmd("goto")
 	cmdGrid.addSubCmd("bookmark")
 
 	cmdUnit := cli.CmdTree.addSubCmd("unit")
-	cmdUnitList := cmdUnit.addSubCmd("list")
-	cmdUnitList.function = cmdUnit.listCommands
+	cmdUnit.addSubCmd("list")
 	cmdUnit.addSubCmd("select")
 	cmdUnit.addSubCmd("deselect")
 	cmdUnit.addSubCmd("alias")
@@ -183,8 +176,7 @@ func (cli *CommandLine) initCommands() {
 	cmdUnitSpawn.function = spawn
 
 	cmdGroup := cli.CmdTree.addSubCmd("group")
-	cmdGroupList := cmdGroup.addSubCmd("list")
-	cmdGroupList.function = cmdGroup.listCommands
+	cmdGroup.addSubCmd("list")
 	cmdGroup.addSubCmd("select")
 	cmdGroup.addSubCmd("deselect")
 	cmdGroup.addSubCmd("set")
